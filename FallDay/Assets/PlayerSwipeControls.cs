@@ -9,11 +9,14 @@ public class PlayerSwipeControls : MonoBehaviour
     Vector3 JumpedFrom;
     public Rigidbody2D playerrb;
     public float speed;
-    private float JumpPower = 8f;
+    private float JumpPower = 7f;
     public GameObject GroundCheck;
     public LayerMask Floor;
     public Collider2D playercollide;
     public LayerMask OtherFloor;
+    int touchydifference;
+    private float touchendydiff;
+    private float touchendxdiff;
 
     public float jumptimer = -0f;
     private void Start()
@@ -59,23 +62,26 @@ public class PlayerSwipeControls : MonoBehaviour
         if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
         {
             touchend = Input.GetTouch(0).position;
+  
 
-            if (touchend.y > touchstart.y&&IsGrounded())
+            if (touchend.y > touchstart.y && IsGrounded() && touchend.y > touchstart.y + 80f)
             {
+
                 Jump();
             }
 
-            if (touchend.y < touchstart.y&&IsGrounded())
+            if (touchend.y < touchstart.y&&IsGrounded()&&touchend.y < touchstart.y - 80f)
             {
                 DropDown();
             }
 
-            if (touchend.x > touchstart.x)
+            if (touchend.x > touchstart.x&& touchend.x > touchstart.x + 60f)
             {
                 TurnRight();
+                Debug.Log("Right");
             }
 
-            if (touchend.x < touchstart.x)
+            if (touchend.x < touchstart.x && touchend.x < touchstart.x + 60f)
             {
                 TurnLeft();
             }
@@ -86,20 +92,20 @@ public class PlayerSwipeControls : MonoBehaviour
 
     private bool IsGrounded()
     {
-        return Physics2D.OverlapCircle(GroundCheck.transform.position, 0.2f, Floor) || Physics2D.OverlapCircle(GroundCheck.transform.position, 0.2f, OtherFloor);
+        return Physics2D.OverlapCircle(GroundCheck.transform.position, 0.01f, Floor) || Physics2D.OverlapCircle(GroundCheck.transform.position, 0.2f, OtherFloor);
 
     }
     private void DropDown()
     {
         playercollide.excludeLayers = Floor.value;
-        jumptimer = 0.5f;
+        jumptimer = 0.4f;
     }
 
     private void Jump()
     {
         playerrb.linearVelocity = new Vector2(playerrb.linearVelocity.x, JumpPower);
         playercollide.excludeLayers = Floor.value;
-        jumptimer = 1f;
+        jumptimer = 0.5f;
     }
 
     private void TurnLeft()
