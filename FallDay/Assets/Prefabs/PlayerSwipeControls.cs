@@ -9,7 +9,7 @@ public class PlayerSwipeControls : MonoBehaviour
     Vector3 JumpedFrom;
     public Rigidbody2D playerrb;
     public float speed;
-    private float JumpPower = 7f;
+    public float JumpPower = 7f;
     public GameObject GroundCheck;
     public LayerMask Floor;
     public Collider2D playercollide;
