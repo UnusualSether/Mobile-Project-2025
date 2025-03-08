@@ -1410,7 +1410,7 @@ MonoBehaviour:
   facingside: 0
   playerrb: {fileID: 1078364648}
   speed: 6
-  JumpPower: 20
+  JumpPower: 25
   GroundCheck: {fileID: 45571652}
   Floor:
     serializedVersion: 2
