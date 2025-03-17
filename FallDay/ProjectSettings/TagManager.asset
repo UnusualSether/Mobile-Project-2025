@@ -17,8 +17,8 @@ TagManager:
   - Floor
   - Platform
   - Wall
-  - 
-  - 
+  - WallRight
+  - WallLeft
   - 
   - 
   - 

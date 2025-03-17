@@ -1,3 +1,4 @@
+using System.IO.Pipes;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -20,7 +21,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask platformLayer;
     [SerializeField] private LayerMask wallLayer;
-    [SerializeField] private Transform wallCheck;
+    [SerializeField] private LayerMask rightWallLayer;
+    [SerializeField] private LayerMask leftWallLayer;
+
     [SerializeField] private Vector2 wallJumpingPower = new Vector2(8f, 16f);
 
     
@@ -30,15 +33,17 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
 
     private bool isGrounded; 
-    private bool isOnPlatform; 
+    private bool isOnPlatform;
+
+    private bool isRightWall;
+    private bool isLeftWall;
 
     //wall slide / jumping
     private bool isWallSliding;
     private bool isWallJumping;
 
-    private Vector2 startTouchPosition; // Posição inicial do toque
-    private Vector2 endTouchPosition; // Posição final do toque
-
+    private Vector2 startTouchPosition; 
+    private Vector2 endTouchPosition; 
     [SerializeField]private float currentDirection = 1f; // Direção atual do movimento (-1: esquerda, 1: direita, 0: parado)
 
     void Start()
@@ -50,13 +55,24 @@ public class PlayerController : MonoBehaviour
     {
         HandleTouchInput();
         HandleCollision();
-       //MovePlayer(); Movimenta o personagem continuamente
+        //MovePlayer(); Movimenta o personagem continuamente
+
+        if (isRightWall)
+        {
+            currentDirection = -1f;
+        }
+        else if (isLeftWall)
+        {
+            currentDirection = 1f;
+        }
+       
     }
     private void FixedUpdate()
     {
         MovePlayer();
         WallSlide();
        // WallJump();
+
 
     }
 
@@ -84,9 +100,12 @@ public class PlayerController : MonoBehaviour
     {
         Vector2 swipeDirection = endTouchPosition - startTouchPosition;
 
+        if(swipeDirection.y > 0)
+        {
+            Jump();
+        }
 
-
-        if (Mathf.Abs(swipeDirection.x) > Mathf.Abs(swipeDirection.y)) // Movimento horizontal
+        /*if (Mathf.Abs(swipeDirection.x) > Mathf.Abs(swipeDirection.y)) // Movimento horizontal
         {
             if (swipeDirection.x > 0) // Arrastou para a direita
             {
@@ -100,7 +119,10 @@ public class PlayerController : MonoBehaviour
         else if (swipeDirection.y > 0) // Arrastou para cima (pulo)
         {
             Jump();
-        }
+        }*/
+
+       
+
     }
 
     void MovePlayer()
@@ -120,8 +142,11 @@ public class PlayerController : MonoBehaviour
 
     private void HandleCollision()
     {
-        isGrounded = Physics2D.OverlapCircle(transform.position, rayLength, groundLayer);
+        isGrounded = Physics2D.OverlapCircle(transform.position, rayLength+0.4f, groundLayer);
         isOnPlatform = Physics2D.OverlapCircle(transform.position, rayLength, platformLayer);
+        //leftRight
+        isRightWall = Physics2D.OverlapCircle(transform.position, rayLength, rightWallLayer);
+        isLeftWall = Physics2D.OverlapCircle(transform.position, rayLength, leftWallLayer);
         //wallslide
         isWallSliding = Physics2D.OverlapCircle(transform.position, rayLength, wallLayer);
 
@@ -159,6 +184,7 @@ public class PlayerController : MonoBehaviour
             isWallJumping = true;
             rb.linearVelocity = new Vector2(wallJumpingDirection * wallJumpingPower.x, wallJumpingPower.y);
             wallJumpingCount = 0f;
+    ,
 
             if(transform.localScale.x != wallJumpingDirection)
             {
